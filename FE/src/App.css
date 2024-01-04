@@ -1,0 +1,8 @@
+.admin{
+  width: 1501px;
+  height: 1241px;
+  border: 1px solid #4200FF;
+  flex-shrink: 0;
+  display: flex;
+  
+}
