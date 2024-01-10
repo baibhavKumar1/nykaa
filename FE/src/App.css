@@ -1,8 +1,9 @@
+/* 
 .admin{
-  width: 1501px;
-  height: 1241px;
-  border: 1px solid #4200FF;
+  width: 100vw;
+  height: 80vh;
   flex-shrink: 0;
   display: flex;
-  
-}
+  margin: 0;
+  padding: 0;
+} */

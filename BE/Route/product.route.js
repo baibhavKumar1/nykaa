@@ -1,22 +1,26 @@
-const auth = require("../Middlware/auth.middleware");
+const auth = require("../Middleware/auth.middleware");
 const ProductModel = require("../Model/product.model");
 const express = require('express');
 const ProductRouter = express.Router();
 
 ProductRouter.use(auth)
+
 ProductRouter.get('/', async (req, res) => {
+    const { name, category, gender, sort, order } = req.query;
     try {
-        const product = await ProductModel.find();
-        if (!product) {
-            res.status(400).send('Product not found')
-        }
-        else {
-            res.status(200).send(product)
+        const value = { ...(name && { name }), ...(category && { category }), ...(gender && { gender }) };
+        const sortedData = sort && (order === "asc" || order === "desc") ? { price: order === "asc" ? 1 : -1 } : {};
+        const product = await ProductModel.find(value).sort(sortedData);
+        if (product.length > 0) {
+            return res.status(200).json({ product });
+        } else {
+            return res.status(404).send("No product available");
         }
     } catch (err) {
-        res.status(400).send(err.message)
+        return res.status(500).send(err.message);
     }
 })
+
 ProductRouter.get('/:id', async (req, res) => {
     const id = req.params.id;
     try {
@@ -36,7 +40,7 @@ ProductRouter.post('/', async (req, res) => {
     const { picture, name, description, gender, category, price } = req.body;
     try {
         const product = await ProductModel.find({ name });
-        if (product && product.length>0) {
+        if (product && product.length > 0) {
             console.log(product)
             res.status(400).send('Product already exists')
         } else {
@@ -58,7 +62,7 @@ ProductRouter.patch("/:id", async (req, res) => {
         if (product) {
             const newProduct = await ProductModel.findByIdAndUpdate(
                 id,
-                {...req.body,updated_at:Date.now()}, { new: true }
+                { ...req.body, updated_at: Date.now() }, { new: true }
             );
             res.status(200).json({ message: "product updated successfully", newProduct });
         }
@@ -76,7 +80,7 @@ ProductRouter.put("/:id", async (req, res) => {
         if (product) {
             const newProduct = await ProductModel.findByIdAndUpdate(
                 id,
-                {...req.body,updated_at:Date.now()}, { new: true }
+                { ...req.body, updated_at: Date.now() }, { new: true }
             );
             res.status(200).json({ message: "product updated successfully", newProduct });
         }
@@ -102,6 +106,6 @@ ProductRouter.delete("/:id", async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: err.message });
     }
-});  
+});
 
-module.exports= ProductRouter
+module.exports = ProductRouter
